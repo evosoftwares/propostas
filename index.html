@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposta Interativa - Salva+</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Professional Blue & Cool Gray -->
+    <!-- Application Structure Plan: A estrutura escolhida é um painel de controle de página única com uma barra de navegação lateral fixa. Essa abordagem transforma uma proposta densa e linear em uma experiência explorável e não linear. O usuário pode pular instantaneamente para as seções de interesse (Fases, Orçamento, etc.). O fluxo é projetado para guiar do geral (Visão Geral) ao específico (Detalhes das Fases, Telas do App), utilizando interatividade (abas, maquete clicável, gráfico) para manter o engajamento e facilitar a compreensão de dados complexos, como o cronograma e a análise de esforço. Esta estrutura é superior a um documento estático para a tomada de decisão, pois torna a informação mais acessível e digerível. -->
+    <!-- Visualization & Content Choices: 1. Fases do Projeto (HTML/JS Tabs): Report Info: Backlog por fases. Goal: Organizar/Explorar. Viz/Method: Abas interativas. Interaction: Clicar em uma fase revela seu backlog detalhado. Justification: Evita um scroll longo e permite a comparação focada entre as fases. Library: Vanilla JS. 2. Telas do App (HTML/JS Mockup): Report Info: Descrição das telas. Goal: Informar/Engajar. Viz/Method: Maquete visual de um smartphone. Interaction: Clicar nos botões de navegação da maquete muda a tela exibida. Justification: Transforma descrições textuais em uma experiência visual e tangível, aumentando a clareza. Library: Vanilla JS. 3. Análise de Esforço (Chart.js Donut Chart): Report Info: Tabela de Pontos de Função. Goal: Comparar/Analisar proporções. Viz/Method: Gráfico de rosca. Interaction: Hover sobre as fatias para ver os detalhes. Justification: Comunica a distribuição do esforço de desenvolvimento de forma instantânea, algo que uma tabela numérica não consegue fazer. Library: Chart.js. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .sidebar-link {
+            transition: all 0.2s ease-in-out;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: #3b82f6;
+            color: white;
+            transform: translateX(4px);
+        }
+        .phase-tab.active {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+            color: #3b82f6;
+        }
+        .chart-container {
+            position: relative;
+            height: 350px;
+            width: 100%;
+            max-width: 400px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="w-64 bg-slate-800 text-white p-6 fixed h-full shadow-lg hidden lg:block">
+            <h1 class="text-2xl font-bold mb-8 text-center">Salva<span class="text-blue-500">+</span></h1>
+            <nav id="nav-menu" class="space-y-2">
+                <a href="#overview" class="sidebar-link block p-3 rounded-lg font-medium">Visão Geral</a>
+                <a href="#phases" class="sidebar-link block p-3 rounded-lg font-medium">Fases do Projeto</a>
+                <a href="#app-preview" class="sidebar-link block p-3 rounded-lg font-medium">Preview do App</a>
+                <a href="#analysis" class="sidebar-link block p-3 rounded-lg font-medium">Análise de Esforço</a>
+                <a href="#os-pf" class="sidebar-link block p-3 rounded-lg font-medium">OSs e Pontos de Função</a>
+                <a href="#budget" class="sidebar-link block p-3 rounded-lg font-medium">Orçamento Final</a>
+                <a href="#contact" class="sidebar-link block p-3 rounded-lg font-medium">Próximos Passos</a>
+            </nav>
+            <div class="absolute bottom-4 text-center w-52">
+                <p class="text-xs text-slate-400">&copy; 2025 EVO CLOUD APPLICATIONS LTDA</p>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="lg:ml-64 flex-1 p-4 sm:p-6 md:p-10">
+            <button id="menu-toggle" class="lg:hidden p-2 mb-4 bg-slate-200 rounded-md">
+                Menu
+            </button>
+            
+            <header class="mb-12">
+                <h1 class="text-4xl font-bold text-slate-900">Proposta Interativa: Aplicativo Salva+</h1>
+                <p class="text-lg text-slate-600 mt-2">Uma análise completa do escopo, cronograma e investimento do projeto.</p>
+            </header>
+
+            <!-- Visão Geral -->
+            <section id="overview" class="mb-16 scroll-mt-20">
+                <h2 class="text-3xl font-bold mb-6 border-l-4 border-blue-500 pl-4">Visão Geral do Projeto</h2>
+                <p class="mb-8 text-slate-600">O objetivo é criar a plataforma Salva+, um ecossistema digital composto por um aplicativo para usuários, um site institucional e um painel administrativo. Consolidaremos múltiplos benefícios em um único lugar, focando em uma experiência de usuário simples e centralizada.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <span class="text-5xl font-bold text-blue-600">6</span>
+                        <p class="text-lg font-semibold mt-2">Fases do Projeto</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <span class="text-5xl font-bold text-blue-600">135</span>
+                        <p class="text-lg font-semibold mt-2">Pontos de Função</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <span class="text-5xl font-bold text-blue-600">R$ 25k</span>
+                        <p class="text-lg font-semibold mt-2">Investimento Total</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Fases do Projeto -->
+            <section id="phases" class="mb-16 scroll-mt-20">
+                <h2 class="text-3xl font-bold mb-8 border-l-4 border-blue-500 pl-4">Fases do Projeto</h2>
+                <div class="flex flex-wrap gap-2 mb-6 border-b border-slate-200">
+                    <button class="phase-tab p-3 font-medium text-sm sm:text-base border-b-2 border-transparent" data-phase="0">Fase 0: Setup</button>
+                    <button class="phase-tab p-3 font-medium text-sm sm:text-base border-b-2 border-transparent" data-phase="1">Fase 1: Planejamento</button>
+                    <button class="phase-tab p-3 font-medium text-sm sm:text-base border-b-2 border-transparent" data-phase="2">Fase 2: Desenvolvimento</button>
+                    <button class="phase-tab p-3 font-medium text-sm sm:text-base border-b-2 border-transparent" data-phase="3">Fase 3: Website</button>
+                    <button class="phase-tab p-3 font-medium text-sm sm:text-base border-b-2 border-transparent" data-phase="4">Fase 4: App</button>
+                    <button class="phase-tab p-3 font-medium text-sm sm:text-base border-b-2 border-transparent" data-phase="5">Fase 5: Admin</button>
+                </div>
+                <div id="phase-content" class="bg-white p-6 rounded-xl shadow-md min-h-[300px]">
+                    <!-- Content will be injected by JS -->
+                </div>
+            </section>
+
+            <!-- Preview do App -->
+            <section id="app-preview" class="mb-16 scroll-mt-20">
+                <h2 class="text-3xl font-bold mb-8 border-l-4 border-blue-500 pl-4">Preview Interativo do App</h2>
+                <div class="flex flex-col lg:flex-row gap-8 items-center justify-center">
+                    <div class="w-full max-w-sm mx-auto">
+                        <div class="bg-slate-800 rounded-[40px] p-4 shadow-2xl">
+                            <div class="bg-white rounded-[24px] overflow-hidden">
+                                <div id="app-screen" class="h-[550px] p-4 flex flex-col transition-all duration-300">
+                                    <!-- App screen content will be injected by JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lg:w-1/2">
+                        <h3 class="text-2xl font-semibold mb-4">Explore as Telas</h3>
+                        <p class="text-slate-600 mb-6">Clique nos botões abaixo para navegar pela maquete funcional do aplicativo e visualizar a experiência do usuário final em cada uma das telas principais.</p>
+                        <div class="flex flex-wrap gap-3">
+                            <button class="app-nav-btn bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600" data-screen="login">Login</button>
+                            <button class="app-nav-btn bg-slate-200 text-slate-800 px-4 py-2 rounded-lg hover:bg-slate-300" data-screen="home">Home</button>
+                            <button class="app-nav-btn bg-slate-200 text-slate-800 px-4 py-2 rounded-lg hover:bg-slate-300" data-screen="beneficio">Benefício</button>
+                            <button class="app-nav-btn bg-slate-200 text-slate-800 px-4 py-2 rounded-lg hover:bg-slate-300" data-screen="perfil">Perfil</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Análise de Esforço -->
+            <section id="analysis" class="mb-16 scroll-mt-20">
+                <h2 class="text-3xl font-bold mb-8 border-l-4 border-blue-500 pl-4">Análise de Esforço</h2>
+                 <div class="bg-white p-6 rounded-xl shadow-md flex flex-col md:flex-row items-center gap-8">
+                    <div class="w-full md:w-1/2">
+                        <h3 class="text-2xl font-semibold mb-2">Distribuição de Pontos de Função</h3>
+                        <p class="text-slate-600 mb-4">O gráfico mostra como o esforço de desenvolvimento, medido em Pontos de Função (PF), está distribuído entre as principais áreas do projeto. A maior parte do trabalho concentra-se na Fase 2, dedicada à complexidade das integrações com os parceiros.</p>
+                    </div>
+                    <div class="w-full md:w-1/2">
+                        <div class="chart-container">
+                            <canvas id="effortChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- OSs e Pontos de Função -->
+            <section id="os-pf" class="mb-16 scroll-mt-20">
+                <h2 class="text-3xl font-bold mb-8 border-l-4 border-blue-500 pl-4">Detalhamento de OSs e Pontos de Função</h2>
+                <div class="bg-white p-6 rounded-xl shadow-md overflow-x-auto">
+                    <table class="w-full min-w-[600px] text-left">
+                        <thead class="bg-slate-100">
+                            <tr>
+                                <th class="p-3 font-semibold">Módulo / Fase</th>
+                                <th class="p-3 font-semibold">Função</th>
+                                <th class="p-3 font-semibold">Tipo</th>
+                                <th class="p-3 font-semibold">Complexidade</th>
+                                <th class="p-3 font-semibold text-right">Pontos (PF)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                            <tr class="font-bold bg-blue-50"><td colspan="5" class="p-2">Fase 2: LGPD</td></tr>
+                            <tr><td class="p-3"></td><td class="p-3">ILF - Termos/Consentimento</td><td class="p-3">ILF</td><td class="p-3">Baixa</td><td class="p-3 text-right">7</td></tr>
+                            <tr><td class="p-3"></td><td class="p-3">EI - Registrar Consentimento</td><td class="p-3">EI</td><td class="p-3">Baixa</td><td class="p-3 text-right">3</td></tr>
+                            <tr><td class="p-3"></td><td class="p-3">EQ - Consultar Termos</td><td class="p-3">EQ</td><td class="p-3">Baixa</td><td class="p-3 text-right">3</td></tr>
+                            <tr class="font-medium bg-slate-50"><td colspan="4" class="p-3 text-right">Subtotal</td><td class="p-3 font-bold text-right">13</td></tr>
+
+                            <tr class="font-bold bg-blue-50"><td colspan="5" class="p-2">Fase 2: Integrações</td></tr>
+                            <tr><td class="p-3"></td><td class="p-3">ILF - Fornecedor</td><td class="p-3">ILF</td><td class="p-3">Baixa</td><td class="p-3 text-right">7</td></tr>
+                            <tr><td class="p-3"></td><td class="p-3">ILF - Produto (Consolidado)</td><td class="p-3">ILF</td><td class="p-3 text-red-600">Alta</td><td class="p-3 text-right">15</td></tr>
+                            <tr><td class="p-3"></td><td class="p-3">EI - Sincronizar Dados (por fornecedor)</td><td class="p-3">EI</td><td class="p-3 text-red-600">Alta</td><td class="p-3 text-right">42</td></tr>
+                            <tr><td class="p-3"></td><td class="p-3">EQ - Consultar Status da Integração</td><td class="p-3">EQ</td><td class="p-3">Baixa</td><td class="p-3 text-right">3</td></tr>
+                             <tr class="font-medium bg-slate-50"><td colspan="4" class="p-3 text-right">Subtotal</td><td class="p-3 font-bold text-right">67</td></tr>
+
+                            <tr class="font-bold bg-blue-50"><td colspan="5" class="p-2">Fase 3: Website</td></tr>
+                            <tr><td colspan="4" class="p-3 italic text-slate-500">Subtotal das funções</td><td class="p-3 text-right">11</td></tr>
+                             <tr class="font-medium bg-slate-50"><td colspan="4" class="p-3 text-right">Subtotal</td><td class="p-3 font-bold text-right">11</td></tr>
+
+                            <tr class="font-bold bg-blue-50"><td colspan="5" class="p-2">Fase 4: Aplicativo</td></tr>
+                            <tr><td class="p-3"></td><td class="p-3">ILF - Colaborador/Empresa Cliente</td><td class="p-3">ILF</td><td class="p-3">Média</td><td class="p-3 text-right">10</td></tr>
+                            <tr><td class="p-3"></td><td class="p-3">EI - Login de Colaborador</td><td class="p-3">EI</td><td class="p-3">Baixa</td><td class="p-3 text-right">3</td></tr>
+                            <tr><td class="p-3"></td><td class="p-3">EO - Listar Benefícios</td><td class="p-3">EO</td><td class="p-3">Média</td><td class="p-3 text-right">5</td></tr>
+                            <tr><td class="p-3"></td><td class="p-3">EQ - Detalhar/Usar Benefício</td><td class="p-3">EQ</td><td class="p-3">Baixa</td><td class="p-3 text-right">9</td></tr>
+                            <tr class="font-medium bg-slate-50"><td colspan="4" class="p-3 text-right">Subtotal</td><td class="p-3 font-bold text-right">27</td></tr>
+
+                             <tr class="font-bold bg-blue-50"><td colspan="5" class="p-2">Fase 5: Back-Office</td></tr>
+                            <tr><td class="p-3"></td><td class="p-3">EI - Gerenciar Clientes (CRUD)</td><td class="p-3">EI</td><td class="p-3">Média</td><td class="p-3 text-right">4</td></tr>
+                            <tr><td class="p-3"></td><td class="p-3">EI - Gerenciar Colaboradores (CRUD)</td><td class="p-3">EI</td><td class="p-3">Média</td><td class="p-3 text-right">4</td></tr>
+                            <tr><td class="p-3"></td><td class="p-3">EO - Exibir Logs</td><td class="p-3">EO</td><td class="p-3">Baixa</td><td class="p-3 text-right">4</td></tr>
+                            <tr><td class="p-3"></td><td class="p-3">EO - Exibir Dashboard</td><td class="p-3">EO</td><td class="p-3">Média</td><td class="p-3 text-right">5</td></tr>
+                            <tr class="font-medium bg-slate-50"><td colspan="4" class="p-3 text-right">Subtotal</td><td class="p-3 font-bold text-right">17</td></tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="bg-slate-800 text-white font-bold text-lg">
+                                <td colspan="4" class="p-4 text-right">Total de Pontos de Função</td>
+                                <td class="p-4 text-right">135</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Orçamento Final -->
+            <section id="budget" class="mb-16 scroll-mt-20">
+                <h2 class="text-3xl font-bold mb-6 border-l-4 border-blue-500 pl-4">Orçamento Final</h2>
+                <div class="bg-white p-8 rounded-xl shadow-md">
+                    <div class="flow-root">
+                        <dl class="-my-4 divide-y divide-slate-200 text-lg">
+                            <div class="flex items-center justify-between py-4">
+                                <dt class="text-slate-600">Total de Pontos de Função</dt>
+                                <dd class="font-semibold text-slate-900">135 PF</dd>
+                            </div>
+                            <div class="flex items-center justify-between py-4">
+                                <dt class="text-slate-600">Custo por Ponto de Função</dt>
+                                <dd class="font-semibold text-slate-900">R$ 185,19</dd>
+                            </div>
+                            <div class="flex items-center justify-between py-4 text-2xl font-bold">
+                                <dt class="text-blue-600">Valor Total do Projeto</dt>
+                                <dd class="text-blue-600">R$ 25.000,00</dd>
+                            </div>
+                        </dl>
+                    </div>
+                    <div class="mt-8 border-t-2 border-dashed border-slate-300 pt-8">
+                        <h3 class="text-xl font-semibold mb-4 text-center">Condições de Pagamento</h3>
+                        <div class="flex flex-col md:flex-row gap-6 text-center">
+                            <div class="flex-1 border border-slate-200 p-6 rounded-lg">
+                                <p class="text-slate-600">Pagamento na Assinatura</p>
+                                <p class="text-2xl font-bold text-slate-800">R$ 12.500,00 <span class="text-base font-normal">(50%)</span></p>
+                            </div>
+                            <div class="flex-1 border border-slate-200 p-6 rounded-lg">
+                                <p class="text-slate-600">Pagamento na Finalização</p>
+                                <p class="text-2xl font-bold text-slate-800">R$ 12.500,00 <span class="text-base font-normal">(50%)</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contato -->
+            <section id="contact" class="scroll-mt-20 text-center">
+                 <h2 class="text-3xl font-bold mb-6 border-l-4 border-blue-500 pl-4 inline-block">Próximos Passos</h2>
+                 <div class="bg-white p-8 rounded-xl shadow-md">
+                    <p class="text-lg text-slate-600 mb-6">A EVO CLOUD APPLICATIONS LTDA reafirma seu compromisso com um processo de desenvolvimento transparente e faseado. Estamos prontos para iniciar este projeto e transformar o Salva+ em realidade.</p>
+                    <a href="https://wa.me/5511953433724?text=eu%20aceito%20a%20proposta%2C%20podemos%20prosseguir%20com%20o%20contrato" target="_blank" class="inline-block bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg hover:bg-blue-700 transition-transform hover:scale-105">
+                        Aprovar Proposta e Iniciar Projeto
+                    </a>
+                    <p class="mt-4 text-sm text-slate-500">CNPJ: 44.319.992/0001-90 | Telefone: +55 11 95343-3724</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- DATA ---
+            const phaseData = {
+                '0': {
+                    title: 'Fase 0: Configuração e Design',
+                    description: 'Preparar as fundações técnicas e visuais do projeto, incluindo a configuração de infraestrutura e a criação da identidade visual.',
+                    tasks: [
+                        'Configurar repositórios de código (Git/GitHub).',
+                        'Definir infraestrutura em nuvem e automações de deploy (CI/CD).',
+                        'Criar a identidade visual do Salva+ (logo, paleta de cores).',
+                        'Desenvolver protótipos de alta fidelidade das telas do App e Site.'
+                    ]
+                },
+                '1': {
+                    title: 'Fase 1: Planejamento Estratégico das Integrações',
+                    description: 'Investigar, documentar e planejar detalhadamente a integração com cada parceiro, reconhecendo as diferentes tecnologias e modelos de dados para mitigar riscos.',
+                    tasks: [
+                        'Analisar a API do Clube de Vantagens.',
+                        'Analisar a API de Telemedicina/Telepet.',
+                        'Analisar a integração da Vidalink (link externo).',
+                        'Analisar a API Nativa da Nipomed.',
+                        'Analisar o formato de dados de Seguros.',
+                        'Consolidar o plano técnico final para o desenvolvimento.'
+                    ]
+                },
+                '2': {
+                    title: 'Fase 2: Desenvolvimento das Integrações e Conformidade',
+                    description: 'Construir os conectores para cada parceiro e garantir a conformidade do aplicativo com a Lei Geral de Proteção de Dados (LGPD).',
+                    tasks: [
+                        'Desenvolver os conectores para os 7 parceiros.',
+                        'Criar um painel de monitoramento do status das integrações.',
+                        'Implementar telas de Termos de Serviço e Política de Privacidade.',
+                        'Implementar a coleta e armazenamento do consentimento do usuário.'
+                    ]
+                },
+                '3': {
+                    title: 'Fase 3: Lançamento do Website Institucional',
+                    description: 'Publicar o site de apresentação do Salva+ para o mercado, servindo como vitrine do negócio e canal de contato.',
+                    tasks: [
+                        'Desenvolver a página principal (Home) com a proposta de valor.',
+                        'Desenvolver a página "Como Funciona".',
+                        'Desenvolver a página de "Contato" com formulário.'
+                    ]
+                },
+                '4': {
+                    title: 'Fase 4: Lançamento do Aplicativo Salva+',
+                    description: 'Disponibilizar o aplicativo funcional para que os usuários finais possam se cadastrar, fazer login e interagir com todos os benefícios.',
+                    tasks: [
+                        'Implementar o fluxo de cadastro e login com CPF e senha de 4 dígitos.',
+                        'Implementar o Dashboard principal com os cards para cada benefício.',
+                        'Implementar as telas de interação de cada benefício (Web View, Informativa, etc).'
+                    ]
+                },
+                '5': {
+                    title: 'Fase 5: Ferramentas Administrativas',
+                    description: 'Criar a área interna (back-office) para a equipe Salva+ gerenciar a plataforma de forma eficiente.',
+                    tasks: [
+                        'Desenvolver o módulo de gerenciamento de Empresas Clientes e seus Usuários.',
+                        'Criar um módulo para visualização de logs de uso e interações.',
+                        'Criar um dashboard com relatórios básicos de uso.'
+                    ]
+                },
+            };
+
+            const appScreens = {
+                login: `
+                    <div class="flex-grow flex flex-col justify-center p-4">
+                        <h2 class="text-2xl font-bold text-center text-blue-600 mb-8">salva+</h2>
+                        <input type="text" placeholder="CPF" class="w-full p-3 mb-4 border border-slate-300 rounded-lg">
+                        <input type="password" placeholder="Senha de 4 dígitos" class="w-full p-3 mb-6 border border-slate-300 rounded-lg">
+                        <button class="w-full bg-blue-600 text-white p-3 rounded-lg font-bold shadow">Entrar</button>
+                        <p class="text-center text-sm text-slate-500 mt-4">Esqueci minha senha</p>
+                    </div>`,
+                home: `
+                    <div class="p-2">
+                        <div class="flex justify-between items-center mb-4">
+                             <h2 class="text-xl font-bold">Olá, Usuário!</h2>
+                             <div class="w-8 h-8 bg-slate-200 rounded-full"></div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="bg-blue-50 p-4 rounded-lg shadow-sm flex justify-between items-center"><div><h3 class="font-semibold">Clube de Vantagens</h3><p class="text-sm text-slate-600">Descontos especiais</p></div><span class="text-blue-500 font-bold">&gt;</span></div>
+                            <div class="bg-blue-50 p-4 rounded-lg shadow-sm flex justify-between items-center"><div><h3 class="font-semibold">Telemedicina</h3><p class="text-sm text-slate-600">Agende uma consulta</p></div><span class="text-blue-500 font-bold">&gt;</span></div>
+                            <div class="bg-blue-50 p-4 rounded-lg shadow-sm flex justify-between items-center"><div><h3 class="font-semibold">Nipomed</h3><p class="text-sm text-slate-600">Consulte a rede</p></div><span class="text-blue-500 font-bold">&gt;</span></div>
+                            <div class="bg-blue-50 p-4 rounded-lg shadow-sm flex justify-between items-center"><div><h3 class="font-semibold">Seguros</h3><p class="text-sm text-slate-600">Seus planos ativos</p></div><span class="text-blue-500 font-bold">&gt;</span></div>
+                        </div>
+                    </div>`,
+                beneficio: `
+                    <div>
+                        <div class="flex items-center p-2 border-b"><span class="font-bold mr-4">&lt;</span><h2 class="text-xl font-bold">Telemedicina</h2></div>
+                        <div class="p-4 text-center">
+                            <h3 class="text-lg font-semibold mt-8 mb-4">Agende uma consulta</h3>
+                            <p class="text-slate-600 mb-8">Esta área carregaria a interface do parceiro para agendamento.</p>
+                            <button class="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold">Iniciar Agendamento</button>
+                        </div>
+                    </div>`,
+                perfil: `
+                    <div>
+                        <div class="flex items-center p-2 border-b"><span class="font-bold mr-4">&lt;</span><h2 class="text-xl font-bold">Meu Perfil</h2></div>
+                        <div class="p-4">
+                            <h3 class="font-semibold mt-4">Dados Pessoais</h3>
+                            <p class="text-slate-600">Nome do Usuário</p>
+                            <p class="text-slate-600">***.123.456-**</p>
+                            <h3 class="font-semibold mt-6">Segurança</h3>
+                            <p class="text-blue-600 cursor-pointer">Alterar Senha</p>
+                            <button class="w-full mt-12 bg-red-500 text-white p-3 rounded-lg font-bold">Sair</button>
+                        </div>
+                    </div>`
+            };
+
+            // --- PHASES LOGIC ---
+            const phaseTabs = document.querySelectorAll('.phase-tab');
+            const phaseContent = document.getElementById('phase-content');
+
+            function updatePhaseContent(phaseId) {
+                const data = phaseData[phaseId];
+                if (!data) return;
+
+                let tasksHtml = data.tasks.map(task => `<li class="flex items-start"><span class="text-blue-500 mr-2 mt-1">&#10003;</span><span>${task}</span></li>`).join('');
+
+                phaseContent.innerHTML = `
+                    <h3 class="text-2xl font-bold mb-2">${data.title}</h3>
+                    <p class="text-slate-600 mb-6">${data.description}</p>
+                    <ul class="space-y-2 text-slate-700">${tasksHtml}</ul>
+                `;
+
+                phaseTabs.forEach(t => t.classList.remove('active'));
+                document.querySelector(`.phase-tab[data-phase="${phaseId}"]`).classList.add('active');
+            }
+
+            phaseTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    updatePhaseContent(tab.dataset.phase);
+                });
+            });
+
+            // --- APP PREVIEW LOGIC ---
+            const appNavButtons = document.querySelectorAll('.app-nav-btn');
+            const appScreen = document.getElementById('app-screen');
+
+            function updateAppScreen(screenId) {
+                appScreen.innerHTML = appScreens[screenId] || appScreens.login;
+                appNavButtons.forEach(btn => {
+                    btn.classList.remove('bg-blue-500', 'text-white');
+                    btn.classList.add('bg-slate-200', 'text-slate-800');
+                });
+                const activeBtn = document.querySelector(`.app-nav-btn[data-screen="${screenId}"]`);
+                activeBtn.classList.add('bg-blue-500', 'text-white');
+                activeBtn.classList.remove('bg-slate-200', 'text-slate-800');
+            }
+
+            appNavButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    updateAppScreen(button.dataset.screen);
+                });
+            });
+
+            // --- EFFORT CHART LOGIC ---
+            const ctx = document.getElementById('effortChart').getContext('2d');
+            const effortChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['LGPD', 'Integrações', 'Website', 'Aplicativo', 'Back-Office'],
+                    datasets: [{
+                        label: 'Pontos de Função',
+                        data: [13, 67, 11, 27, 17],
+                        backgroundColor: [
+                            '#60a5fa', // blue-400
+                            '#2563eb', // blue-600
+                            '#93c5fd', // blue-300
+                            '#3b82f6', // blue-500
+                            '#1d4ed8'  // blue-700
+                        ],
+                        borderColor: '#ffffff',
+                        borderWidth: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + ' PF';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+            
+             // --- SIDEBAR LOGIC ---
+            const menuToggle = document.getElementById('menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('hidden');
+            });
+            
+            // --- SCROLLSPY LOGIC ---
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('#nav-menu a');
+
+            window.onscroll = () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if(pageYOffset >= sectionTop - 120){
+                        current = section.getAttribute('id');
+                    }
+                });
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if(link.getAttribute('href') === `#${current}`){
+                        link.classList.add('active');
+                    }
+                });
+            };
+
+            // Initial content load
+            updatePhaseContent('0');
+            updateAppScreen('login');
+            navLinks[0].classList.add('active'); // Activate first link on load
+        });
+    </script>
+</body>
+</html>
